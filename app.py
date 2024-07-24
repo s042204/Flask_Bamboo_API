@@ -1,6 +1,5 @@
 from flask import Flask, jsonify
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -12,14 +11,14 @@ employees = [
     {"id": 3, "name": "Emily Davis", "position": "Designer"}
 ]
 
-# In-memory user store for simplicity
+# Users and passwords dictionary
 users = {
-    "test": generate_password_hash("pass")
+    "admin": "secret"
 }
 
 @auth.verify_password
 def verify_password(username, password):
-    if username in users and check_password_hash(users.get(username), password):
+    if username in users and users[username] == password:
         return username
 
 @app.route('/bamboo', methods=['GET'])
