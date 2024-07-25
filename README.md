@@ -1,3 +1,8 @@
-docker build -t flask_bamboo_api .      
+### Using Docker
+1. Build and run the Docker container:
+    ```sh
+    docker-compose up --build
+    ```
 
-docker run -p 5000:5000 flask_bamboo_api
+## Access 
+- Open your browser and go to: `http://127.0.0.1:5000/employees`
