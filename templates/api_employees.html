@@ -1,0 +1,22 @@
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Extension</th>
+            <th>Title</th>
+            <th>Department</th>
+            <th>Reports To</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for employee in employees if not employee.local %}
+        <tr>
+            <td>{{ employee.displayName }}</td>
+            <td>{{ employee.workPhoneExtension }}</td>
+            <td>{{ employee.jobTitle }}</td>
+            <td>{{ employee.department }}</td>
+            <td>{{ employee.supervisor }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

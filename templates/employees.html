@@ -1,34 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Directory</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <h1>Employee Directory</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Extension</th>
-                <th>Title</th>
-                <th>Department</th>
-                <th>Reports To</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for employee in employees %}
-            <tr>
-                <td>{{ employee.displayName }}</td>
-                <td>{{ employee.workPhoneExtension }}</td>
-                <td>{{ employee.jobTitle }}</td>
-                <td>{{ employee.department }}</td>
-                <td>{{ employee.supervisor }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Employee Directory{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/employee-directory.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Employee Directory</h1>
+
+<h2>Add Employee</h2>
+<form action="{{ url_for('add_employee') }}" method="post">
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="extension">Extension:</label>
+        <input type="text" id="extension" name="extension" required>
+    </div>
+    <div class="form-group">
+        <label for="position">Position:</label>
+        <input type="text" id="position" name="position" required>
+    </div>
+    <div class="form-group">
+        <label for="department">Department:</label>
+        <input type="text" id="department" name="department" required>
+    </div>
+    <div class="form-group">
+        <label for="supervisor">Reports To:</label>
+        <input type="text" id="supervisor" name="supervisor" required>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn-add">Add Employee</button>
+    </div>
+</form>
+
+<h2>Temporary Employees</h2>
+{% include 'temp_employees.html' %}
+
+<h2>API Employees</h2>
+{% include 'api_employees.html' %}
+{% endblock %}

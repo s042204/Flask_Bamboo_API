@@ -4,18 +4,33 @@ body {
     margin: 0;
     padding: 20px;
 }
+
+h1, h2 {
+    font-weight: normal;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
+
 th, td {
     padding: 10px;
     border: 1px solid #ddd;
 }
+
 th {
     background-color: #f2f2f2;
 }
+
 tr:nth-child(even) {
     background-color: #f9f9f9;
+}
+
+button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
