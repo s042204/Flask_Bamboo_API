@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Directory</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Employee Directory</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Extension</th>
+                <th>Title</th>
+                <th>Department</th>
+                <th>Reports To</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ employee.displayName }}</td>
+                <td>{{ employee.workPhoneExtension }}</td>
+                <td>{{ employee.jobTitle }}</td>
+                <td>{{ employee.department }}</td>
+                <td>{{ employee.supervisor }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

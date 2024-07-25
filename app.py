@@ -1,30 +1,31 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template, request
 from flask_httpauth import HTTPBasicAuth
+import requests
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
-# Sample data: Employee directory
-employees = [
-    {"id": 1, "name": "John Doe", "position": "Software Engineer"},
-    {"id": 2, "name": "Jane Smith", "position": "Product Manager"},
-    {"id": 3, "name": "Emily Davis", "position": "Designer"}
-]
-
-# Users and passwords dictionary
 users = {
-    "admin": "secret"
+    "login": "pass"
 }
 
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and users[username] == password:
-        return username
+@auth.get_password
+def get_pw(username):
+    if username in users:
+        return users.get(username)
+    return None
 
-@app.route('/bamboo', methods=['GET'])
+@app.route('/employees', methods=['GET'])
 @auth.login_required
 def get_employees():
-    return jsonify(employees)
+    url = 'https://api.bamboohr.com/api/gateway.php/hmd/v1/employees/directory'
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Basic token'
+    }
+    response = requests.get(url, headers=headers)
+    employees = response.json().get('employees', [])
+    return render_template('employees.html', employees=employees)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
