@@ -8,5 +8,4 @@ services:
     volumes:
       - .:/app
     environment:
-      FLASK_ENV: development
-      FLASK_APP: app.py
+      - BAMBOO_API_TOKEN=${BAMBOO_API_TOKEN}

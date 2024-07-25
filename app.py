@@ -1,6 +1,10 @@
 from flask import Flask, jsonify, render_template, request
 from flask_httpauth import HTTPBasicAuth
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -18,10 +22,12 @@ def get_pw(username):
 @app.route('/employees', methods=['GET'])
 @auth.login_required
 def get_employees():
-    url = 'https://api.bamboohr.com/api/gateway.php/hmd/v1/employees/directory'
+    url = os.environ.get('BAMBOOHR_API_URL')
+    token = os.environ.get('BAMBOOHR_API_TOKEN')
+
     headers = {
         'Accept': 'application/json',
-        'Authorization': 'Basic token'
+        'Authorization': f'Basic {token}'
     }
     response = requests.get(url, headers=headers)
     employees = response.json().get('employees', [])
