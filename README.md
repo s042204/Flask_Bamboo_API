@@ -5,6 +5,6 @@
     ```
 
 ## Access 
-- Open your browser and go to: `http://127.0.0.1:5000/employees`
+- Open your browser and go to: `http://127.0.0.1:5000`
 - login: login
 - password: pass
