@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_httpauth import HTTPBasicAuth
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -6,12 +6,14 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 auth = HTTPBasicAuth()
 
+# Setup database
 db_path = os.path.abspath('employees.db')
 db_dir = os.path.dirname(db_path)
 if not os.path.exists(db_dir):
@@ -21,6 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# User authentication
 users = {
     "login": "pass"
 }
@@ -31,6 +34,7 @@ def get_pw(username):
         return users.get(username)
     return None
 
+# Employee model
 class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     displayName = db.Column(db.String(50), nullable=False)
@@ -38,8 +42,8 @@ class Employee(db.Model):
     workPhoneExtension = db.Column(db.String(20), nullable=True)
     department = db.Column(db.String(50), nullable=False, default="Unknown")
     supervisor = db.Column(db.String(50), nullable=True)
-    local = db.Column(db.Boolean, default=True)
 
+# Routes
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -74,19 +78,15 @@ def get_employees():
                 displayName=api_employee.get('displayName', 'N/A'),
                 jobTitle=api_employee.get('jobTitle', 'N/A'),
                 workPhoneExtension=api_employee.get('workPhoneExtension', ''),
-                department=api_employee.get('department', 'N/A'),
-                supervisor=api_employee.get('supervisor', ''),
-                local=False
+                department=api_employee.get('department', 'Unknown'),
+                supervisor=api_employee.get('supervisor', '')
             )
             db.session.add(new_employee)
     db.session.commit()
 
-    local_employees = Employee.query.all()
-    combined_employees = [emp.__dict__ for emp in local_employees]
+    df = pd.DataFrame(api_employees)
 
-    df = pd.DataFrame(combined_employees)
-
-    return render_template('employees.html', employees=combined_employees, table=df.to_html(classes='data', header="true"))
+    return render_template('employees.html', employees=api_employees, table=df.to_html(classes='data', header="true"))
 
 if __name__ == '__main__':
     db.create_all()
