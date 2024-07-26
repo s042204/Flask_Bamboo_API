@@ -1,14 +1,25 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session
 from flask_httpauth import HTTPBasicAuth
+from flask_sqlalchemy import SQLAlchemy
 import requests
 import os
 from dotenv import load_dotenv
+import pandas as pd
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 auth = HTTPBasicAuth()
+
+db_path = os.path.abspath('employees.db')
+db_dir = os.path.dirname(db_path)
+if not os.path.exists(db_dir):
+    os.makedirs(db_dir)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 users = {
     "login": "pass"
@@ -20,8 +31,14 @@ def get_pw(username):
         return users.get(username)
     return None
 
-# Dummy data
-local_employees = []
+class Employee(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    displayName = db.Column(db.String(50), nullable=False)
+    jobTitle = db.Column(db.String(50), nullable=False)
+    workPhoneExtension = db.Column(db.String(20), nullable=True)
+    department = db.Column(db.String(50), nullable=False, default="Unknown")
+    supervisor = db.Column(db.String(50), nullable=True)
+    local = db.Column(db.Boolean, default=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -34,7 +51,6 @@ def login():
         else:
             return 'Invalid credentials', 401
     return render_template('login.html')
-        
 
 @app.route('/employees', methods=['GET'])
 def get_employees():
@@ -51,46 +67,27 @@ def get_employees():
     response = requests.get(url, headers=headers)
     api_employees = response.json().get('employees', [])
 
-    for employee in api_employees:
-        employee['local'] = False
+    for api_employee in api_employees:
+        if not Employee.query.filter_by(id=api_employee['id']).first():
+            new_employee = Employee(
+                id=api_employee['id'],
+                displayName=api_employee.get('displayName', 'N/A'),
+                jobTitle=api_employee.get('jobTitle', 'N/A'),
+                workPhoneExtension=api_employee.get('workPhoneExtension', ''),
+                department=api_employee.get('department', 'N/A'),
+                supervisor=api_employee.get('supervisor', ''),
+                local=False
+            )
+            db.session.add(new_employee)
+    db.session.commit()
 
-    for employee in local_employees:
-        employee['local'] = True
+    local_employees = Employee.query.all()
+    combined_employees = [emp.__dict__ for emp in local_employees]
 
-    combined_employees = api_employees + local_employees
+    df = pd.DataFrame(combined_employees)
 
-    return render_template('employees.html', employees=combined_employees)
-
-@app.route('/add_employee', methods=['POST'])
-def add_employee():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    
-    name = request.form['name']
-    position = request.form['position']
-    extension = request.form['extension']
-    department = request.form['department']
-    supervisor = request.form['supervisor']
-    new_employee = {
-        "id": len(local_employees) + 1,
-        "displayName": name,
-        "jobTitle": position,
-        "workPhoneExtension": extension,
-        "department": department,
-        "supervisor": supervisor,
-        "local": True
-    }
-    local_employees.append(new_employee)
-    return redirect(url_for('get_employees'))
-
-@app.route('/delete_employee/<int:employee_id>', methods=['POST'])
-def delete_employee(employee_id):
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    
-    global local_employees
-    local_employees = [emp for emp in local_employees if emp["id"] != employee_id]
-    return redirect(url_for('get_employees'))
+    return render_template('employees.html', employees=combined_employees, table=df.to_html(classes='data', header="true"))
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True, host='0.0.0.0')
