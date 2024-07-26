@@ -42,3 +42,6 @@ pip-delete-this-directory.txt
 # Docker
 *.log
 docker-compose.override.yml
+
+# Ignore database files
+*.db
