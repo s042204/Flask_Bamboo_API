@@ -1,26 +1,19 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environment
 env/
 venv/
 
-# Flask settings
 instance/
 .webassets-cache
 
-# Environment variables file
 .env
 
-# VS Code settings
 .vscode/
 
-# macOS
 .DS_Store
 
-# Python egg files
 *.egg
 *.egg-info/
 dist/
@@ -35,10 +28,10 @@ share/python-wheels/
 *.manifest
 *.spec
 
-# Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Docker
 *.log
 docker-compose.override.yml
+
+employees.db

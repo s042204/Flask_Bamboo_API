@@ -15,9 +15,6 @@ auth = HTTPBasicAuth()
 
 # Setup database
 db_path = os.path.abspath('employees.db')
-db_dir = os.path.dirname(db_path)
-if not os.path.exists(db_dir):
-    os.makedirs(db_dir)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -89,5 +86,4 @@ def get_employees():
     return render_template('employees.html', employees=api_employees, table=df.to_html(classes='data', header="true"))
 
 if __name__ == '__main__':
-    db.create_all()
     app.run(debug=True, host='0.0.0.0')
