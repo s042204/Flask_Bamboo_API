@@ -34,4 +34,4 @@ pip-delete-this-directory.txt
 *.log
 docker-compose.override.yml
 
-employees.db
+*.db
