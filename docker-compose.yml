@@ -1,11 +1,12 @@
-version: '3.8'
+version: "3.9"
 
 services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "8000:8000"
     volumes:
       - .:/app
     environment:
-      - BAMBOO_API_TOKEN=${BAMBOO_API_TOKEN}
+      - BAMBOHR_API_URL=${BAMBOHR_API_URL}
+      - BAMBOHR_API_TOKEN=${BAMBOHR_API_TOKEN}

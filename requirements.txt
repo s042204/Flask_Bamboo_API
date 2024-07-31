@@ -10,3 +10,4 @@ Cython==0.29.37
 numpy==1.23.0
 pandas==1.5.0
 Flask-WTF==0.15.1
+gunicorn

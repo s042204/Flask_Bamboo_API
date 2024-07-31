@@ -3,13 +3,13 @@ FROM python:3.9-slim
 WORKDIR /app
 
 COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 5000
+# Print directory contents for debugging purposes
+RUN ls -la /app/templates
+RUN ls -la /app/static
+RUN ls -la /app
 
-ENV FLASK_APP=app.py
-ENV FLASK_RUN_HOST=0.0.0.0
-
-CMD ["python", "app.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "wsgi:app"]
