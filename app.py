@@ -32,7 +32,7 @@ def get_pw(username):
     return None
 
 # Employee model
-class Employee(db.Model):
+class Employees(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     displayName = db.Column(db.String(50), nullable=False)
     jobTitle = db.Column(db.String(50), nullable=False)
@@ -69,8 +69,8 @@ def get_employees():
     api_employees = response.json().get('employees', [])
 
     for api_employee in api_employees:
-        if not Employee.query.filter_by(id=api_employee['id']).first():
-            new_employee = Employee(
+        if not Employees.query.filter_by(id=api_employee['id']).first():
+            new_employee = Employees(
                 id=api_employee['id'],
                 displayName=api_employee.get('displayName', 'N/A'),
                 jobTitle=api_employee.get('jobTitle', 'N/A'),
